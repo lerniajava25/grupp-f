@@ -1,0 +1,41 @@
+# Local development services for KommunFix.
+# Usage: cp .env.example .env  (fill in values)  &&  docker compose up -d
+# Garage needs a one-time layout + bucket setup, see infra/garage/README.md.
+
+services:
+  db:
+    image: postgis/postgis:17-3.7
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kommunfix}
+      POSTGRES_USER: ${POSTGRES_USER:-kommunfix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  garage:
+    image: dxflrs/garage:v2.6.0
+    restart: unless-stopped
+    environment:
+      # Secrets come from .env, never from the committed garage.toml.
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?Set GARAGE_RPC_SECRET in .env (openssl rand -hex 32)}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?Set GARAGE_ADMIN_TOKEN in .env (openssl rand -base64 32)}
+    ports:
+      - "127.0.0.1:${GARAGE_S3_PORT:-3900}:3900" # S3 API
+      - "127.0.0.1:${GARAGE_ADMIN_PORT:-3903}:3903" # Admin API
+    volumes:
+      - ./infra/garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+
+volumes:
+  db-data:
+  garage-meta:
+  garage-data:
