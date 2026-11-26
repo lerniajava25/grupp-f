@@ -5,10 +5,11 @@ this repo. `CLAUDE.md` only points here. Read it fully before making changes.
 
 ## 1. What KommunFix is
 
-Citizens report local issues (potholes, broken street lights, graffiti, …) to their municipality.
-A report has a description, a location and one or more images. Images are analysed by an AI service
-(e.g. to suggest a category), stored privately in S3-compatible storage, and locations are stored
-and queried with PostGIS.
+A national web app where citizens photograph problems in public spaces (potholes, broken
+streetlights, fallen trees, …). Flow: the image is stored privately in Garage (S3) → EXIF/GPS is
+extracted → Spring AI suggests title, description and category → the user confirms the position on a
+map → PostGIS finds the responsible municipality from boundaries → the user approves → the case is sent
+by email (or to a simulated recipient) and saved with history. Full description: [README.md](README.md).
 
 ## 2. Architecture overview
 
@@ -18,12 +19,28 @@ and queried with PostGIS.
                           ▼
                      backend/   Spring Boot 3, Java 21, package se.kommunfix
                       │      │            │
-             JDBC/SQL │      │ S3 API     │ HTTPS
+             JDBC/SQL │      │ S3 API     │ Spring AI
                       ▼      ▼            ▼
-                PostGIS    Garage      AI analysis service
-                (db)       (images,    (free provider, NOT chosen yet;
+                PostGIS    Garage      AI provider
+                (db)       (images,    (free, NOT chosen yet;
                            private)     backend-only API key)
 ```
+
+Backend services, one package each under `se.kommunfix` (organise by feature, not by layer):
+
+| Service | Package | Responsibility |
+|---------|---------|----------------|
+| User | `se.kommunfix.user` | Citizen identity/session, consent. Minimal personal data. |
+| Case | `se.kommunfix.cases` | Create/approve/store cases, statuses, history. |
+| Storage | `se.kommunfix.storage` | Garage S3 upload/download, private bucket, presigned URLs. |
+| AI | `se.kommunfix.ai` | Spring AI image analysis → suggested title/description/category. Hide the provider behind an interface. |
+| Geo | `se.kommunfix.geo` | Coordinates, map position validation, PostGIS spatial queries. |
+| Municipality | `se.kommunfix.municipality` | Municipality boundaries + contact details; point → municipality. |
+| Metadata | `se.kommunfix.metadata` | EXIF/GPS extraction; strip sensitive metadata. |
+| Notification | `se.kommunfix.notification` | Send approved cases by email or to a simulated recipient. |
+
+(`cases` because `case` is a Java keyword.) None of these exist yet; create them test-first as features
+arrive.
 
 | Part | Where | Notes |
 |------|-------|-------|
@@ -31,7 +48,7 @@ and queried with PostGIS.
 | Frontend | `frontend/` | Empty on purpose. The frontend owner picks the stack. Do not scaffold one. |
 | Database | `docker-compose.yml` → `db` | `postgis/postgis`. Schema/migrations not decided yet. |
 | Object storage | `docker-compose.yml` → `garage` | Garage S3. Setup: `infra/garage/README.md`. |
-| AI analysis | n/a | Provider undecided (should be a free service). Keep integrations provider-neutral behind an interface. Config via `AI_*` env vars. |
+| AI analysis | n/a | Spring AI planned; provider undecided (should be free). Adding Spring AI is a dependency change → needs approval. Config via `AI_*` env vars. |
 | CI | `.github/workflows/ci.yml` | Backend `./mvnw verify`; frontend job only once `frontend/package.json` exists. |
 
 Current state: **foundation only**. The only endpoint is `GET /api/health` → `{"status":"ok"}`.
