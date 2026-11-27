@@ -11,7 +11,7 @@
 - [ ] Branch is `feature/…`, `fix/…` or `chore/…` and targets `main`
 - [ ] Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:` …)
 - [ ] Written test-first (Red → Green → Refactor); new behaviour is covered by tests
-- [ ] `cd backend && ./mvnw verify` passes locally (and frontend lint/test/build if touched)
+- [ ] `./mvnw verify` (from the repo root) passes locally (and frontend lint/test/build if touched)
 - [ ] **No existing tests were modified, deleted or skipped** (if they were: requirement change + human approval linked below)
 - [ ] No secrets, keys or real personal data committed; nothing secret reaches the frontend
 - [ ] Images stay private; personal data handled per GDPR notes in `AGENTS.md`

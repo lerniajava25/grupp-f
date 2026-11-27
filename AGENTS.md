@@ -44,12 +44,12 @@ arrive.
 
 | Part | Where | Notes |
 |------|-------|-------|
-| Backend API | `backend/` | Spring Boot 3.5, Java 21, Maven wrapper. Deps today: web, validation, actuator. |
+| Backend API | `backend/` | Spring Boot 3.5, Java 21. Built via the root `pom.xml` aggregator and root Maven wrapper. Deps today: web, validation, actuator. |
 | Frontend | `frontend/` | Empty on purpose. The frontend owner picks the stack. Do not scaffold one. |
 | Database | `docker-compose.yml` → `db` | `postgis/postgis`. Schema/migrations not decided yet. |
 | Object storage | `docker-compose.yml` → `garage` | Garage S3. Setup: `infra/garage/README.md`. |
 | AI analysis | n/a | Spring AI planned; provider undecided (should be free). Adding Spring AI is a dependency change → needs approval. Config via `AI_*` env vars. |
-| CI | `.github/workflows/ci.yml` | Backend `./mvnw verify`; frontend job only once `frontend/package.json` exists. |
+| CI | `.github/workflows/ci.yml` | `./mvnw verify` from the repo root; frontend job only once `frontend/package.json` exists. |
 
 Current state: **foundation only**. The only endpoint is `GET /api/health` → `{"status":"ok"}`.
 
@@ -63,7 +63,7 @@ All production code is written test-first:
 3. **Refactor:** clean up code and tests while keeping everything green.
 4. Repeat in small steps. Commit at green.
 
-Run backend tests: `cd backend && ./mvnw verify`
+Run backend tests: `./mvnw verify` (from the repo root)
 
 ### The test rule (non-negotiable)
 

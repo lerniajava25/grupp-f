@@ -35,7 +35,7 @@ Breaking changes: add `!` after the type (`feat!: …`) and explain in the body.
 1. `git switch main && git pull`
 2. `git switch -c feature/<topic>`
 3. Work test-first (Red → Green → Refactor). Commit at green.
-4. `cd backend && ./mvnw verify` must pass locally.
+4. `./mvnw verify` (from the repo root) must pass locally.
 5. Push and open a pull request to `main`. Fill in the PR template checklist.
 6. **At least one approving review from another team member is required** before merging, and CI
    must be green. Authors don't merge their own unreviewed PRs.

@@ -111,7 +111,24 @@ More detail, including the development rules, is in [AGENTS.md](AGENTS.md).
 
 ## Quick start
 
-**Prerequisites:** Java 21, Docker with Docker Compose v2. Maven comes via the wrapper (`./mvnw`).
+**Prerequisites:** IntelliJ IDEA (Community or Ultimate), JDK 21, Docker with Docker Compose v2.
+Maven comes via the wrapper (`./mvnw`), so there is nothing else to install.
+
+### Open in IntelliJ
+
+1. **File → New → Project from Version Control…** (or **Get from VCS** on the welcome screen),
+   paste the repository URL and clone.
+2. IntelliJ detects the root `pom.xml` and imports the Maven project automatically
+   (if asked, choose **Trust Project** / **Load Maven Project**).
+3. Pick **JDK 21**: **File → Project Structure → Project → SDK** (use *Download JDK…* if you
+   don't have one, e.g. Eclipse Temurin 21).
+4. In the run configuration dropdown (top right), choose **Backend** and press Run.
+   Open <http://localhost:8080/api/health> → `{"status":"ok"}`.
+5. Run **All tests** to run the whole test suite with Maven.
+
+The shared run configurations live in `.run/` and are committed; the rest of `.idea/` is ignored.
+
+### Local services (database and image storage)
 
 ```bash
 # 1. Configure local environment
@@ -124,22 +141,27 @@ docker compose up -d
 
 # 3. First time only: set up the Garage layout, bucket and backend key
 #    see infra/garage/README.md, then put the S3 key into .env
-
-# 4. Run backend tests
-cd backend
-./mvnw verify
-
-# 5. Run the backend
-./mvnw spring-boot:run
-curl http://localhost:8080/api/health      # → {"status":"ok"}
 ```
 
 Stop services with `docker compose down` (add `-v` to wipe all local data).
 
+### From the command line
+
+Run from the repository root:
+
+```bash
+./mvnw verify                          # build + all tests (same as CI)
+./mvnw -pl backend spring-boot:run     # run the backend
+curl http://localhost:8080/api/health  # → {"status":"ok"}
+```
+
 ## Repository layout
 
 ```
-backend/            Spring Boot 3 (Java 21, Maven wrapper), package se.kommunfix
+pom.xml             Root Maven aggregator (modules: backend)
+mvnw, .mvn/         Maven wrapper, run from the repo root
+.run/               Shared IntelliJ run configurations (Backend, All tests)
+backend/            Spring Boot 3 (Java 21), package se.kommunfix
 frontend/           Empty on purpose. The frontend owner chooses the stack
 infra/garage/       Garage config + bucket setup guide
 docker-compose.yml  PostGIS + Garage for local development
