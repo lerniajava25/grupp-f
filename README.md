@@ -61,7 +61,7 @@ More detail, including the development rules, is in [AGENTS.md](AGENTS.md).
 
 | Area | Choice |
 |------|--------|
-| Backend | Java 21, Spring Boot 3.5, Maven (wrapper) |
+| Backend | Java 25, Spring Boot 3.5, Maven (wrapper) |
 | Database | PostgreSQL + PostGIS |
 | Image storage | Garage (S3-compatible) |
 | AI | Spring AI (model/provider TBD, should be free) |
@@ -111,7 +111,7 @@ More detail, including the development rules, is in [AGENTS.md](AGENTS.md).
 
 ## Quick start
 
-**Prerequisites:** IntelliJ IDEA (Community or Ultimate), JDK 21, Docker with Docker Compose v2.
+**Prerequisites:** IntelliJ IDEA (Community or Ultimate), JDK 25, Docker with Docker Compose v2.
 Maven comes via the wrapper (`./mvnw`), so there is nothing else to install.
 
 ### Open in IntelliJ
@@ -120,8 +120,8 @@ Maven comes via the wrapper (`./mvnw`), so there is nothing else to install.
    paste the repository URL and clone.
 2. IntelliJ detects the root `pom.xml` and imports the Maven project automatically
    (if asked, choose **Trust Project** / **Load Maven Project**).
-3. Pick **JDK 21**: **File → Project Structure → Project → SDK** (use *Download JDK…* if you
-   don't have one, e.g. Eclipse Temurin 21).
+3. Pick **JDK 25**: **File → Project Structure → Project → SDK** (use *Download JDK…* if you
+   don't have one, e.g. Eclipse Temurin 25).
 4. In the run configuration dropdown (top right), choose **Backend** and press Run.
    Open <http://localhost:8080/api/health> → `{"status":"ok"}`.
 5. Run **All tests** to run the whole test suite with Maven.
@@ -161,7 +161,7 @@ curl http://localhost:8080/api/health  # → {"status":"ok"}
 pom.xml             Root Maven aggregator (modules: backend)
 mvnw, .mvn/         Maven wrapper, run from the repo root
 .run/               Shared IntelliJ run configurations (Backend, All tests)
-backend/            Spring Boot 3 (Java 21), package se.kommunfix
+backend/            Spring Boot 3 (Java 25), package se.kommunfix
 frontend/           Empty on purpose. The frontend owner chooses the stack
 infra/garage/       Garage config + bucket setup guide
 docker-compose.yml  PostGIS + Garage for local development

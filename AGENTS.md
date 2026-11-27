@@ -17,7 +17,7 @@ by email (or to a simulated recipient) and saved with history. Full description:
  Browser ──HTTPS──▶  frontend/  (stack chosen by the frontend owner, not decided yet)
                           │  calls /api/...  (no secrets in the frontend)
                           ▼
-                     backend/   Spring Boot 3, Java 21, package se.kommunfix
+                     backend/   Spring Boot 3, Java 25, package se.kommunfix
                       │      │            │
              JDBC/SQL │      │ S3 API     │ Spring AI
                       ▼      ▼            ▼
@@ -44,7 +44,7 @@ arrive.
 
 | Part | Where | Notes |
 |------|-------|-------|
-| Backend API | `backend/` | Spring Boot 3.5, Java 21. Built via the root `pom.xml` aggregator and root Maven wrapper. Deps today: web, validation, actuator. |
+| Backend API | `backend/` | Spring Boot 3.5, Java 25. Built via the root `pom.xml` aggregator and root Maven wrapper. Deps today: web, validation, actuator. |
 | Frontend | `frontend/` | Empty on purpose. The frontend owner picks the stack. Do not scaffold one. |
 | Database | `docker-compose.yml` → `db` | `postgis/postgis`. Schema/migrations not decided yet. |
 | Object storage | `docker-compose.yml` → `garage` | Garage S3. Setup: `infra/garage/README.md`. |
