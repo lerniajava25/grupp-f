@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Root aggregator. Lets IntelliJ import the whole repo as one Maven project and lets
+  `./mvnw verify` build and test every module from the repository root.
+  It is not a parent: each module keeps its own parent (backend uses spring-boot-starter-parent).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>se.kommunfix</groupId>
+    <artifactId>kommunfix</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>kommunfix</name>
+    <description>KommunFix root aggregator</description>
+
+    <modules>
+        <module>backend</module>
+    </modules>
+</project>

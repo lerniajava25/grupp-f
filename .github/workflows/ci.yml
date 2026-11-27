@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (./mvnw verify)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Verify (from repo root, all Maven modules)
+        run: ./mvnw -B verify
+
+  frontend:
+    name: Frontend (if present)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect frontend
+        id: detect
+        run: |
+          if [ -f frontend/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No frontend/package.json yet, skipping frontend checks."
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          node-version: lts/*
+
+      - name: Install
+        if: steps.detect.outputs.present == 'true'
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint, test, build (only scripts that exist)
+        if: steps.detect.outputs.present == 'true'
+        working-directory: frontend
+        run: |
+          for s in lint test build; do
+            if node -e "process.exit(require('./package.json').scripts?.[process.argv[1]] ? 0 : 1)" "$s"; then
+              echo "::group::npm run $s"
+              npm run "$s"
+              echo "::endgroup::"
+            else
+              echo "No '$s' script, skipping."
+            fi
+          done
